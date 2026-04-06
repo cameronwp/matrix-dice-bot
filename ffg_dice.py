@@ -258,66 +258,11 @@ def format_ffg_results(results: List[FFGResult], net: Dict[str, int]) -> str:
 
 def format_ffg_summary(results: List[FFGResult], net: Dict[str, int]) -> str:
     """
-    Multi-line FFG summary with raw totals and an overall verdict.
+    FFG summary with raw totals and an overall verdict.
 
     Example output:
-        ── FFG Summary ──
-        Rolled: 2 Ability, 1 Difficulty
-        Raw totals: 3 Success, 1 Failure, 2 Advantage, 1 Threat
-        Net: 2 Success, 1 Advantage
-        Verdict: ✅ SUCCESS with Advantage
+        ✅ SUCCESS with Advantage. 2 Success, 1 Advantage
     """
-    from collections import Counter
-
-    lines: List[str] = ["── FFG Summary ──"]
-
-    # Rolled line: count per die type
-    die_counts: Counter = Counter()
-    for r in results:
-        die_counts[r.die_name] += 1
-    rolled_parts = [f"{c} {name.capitalize()}" for name, c in die_counts.items()]
-    lines.append(f"Rolled: {', '.join(rolled_parts)}")
-
-    # Per-die results
-    for r in results:
-        lines.append(f"  {r.die_name.capitalize()}: {r.display()}")
-
-    # Raw totals (before cancellation)
-    totals: Dict[str, int] = {
-        SU: 0,
-        FA: 0,
-        AD: 0,
-        TH: 0,
-        TR: 0,
-        DE: 0,
-        LS: 0,
-        DS: 0,
-    }
-    for r in results:
-        for sym in r.symbols:
-            totals[sym] += 1
-
-    total_success = totals[SU] + totals[TR]
-    total_failure = totals[FA] + totals[DE]
-
-    raw_parts = []
-    if total_success:
-        raw_parts.append(f"{total_success} Success")
-    if total_failure:
-        raw_parts.append(f"{total_failure} Failure")
-    if totals[AD]:
-        raw_parts.append(f"{totals[AD]} Advantage")
-    if totals[TH]:
-        raw_parts.append(f"{totals[TH]} Threat")
-    if totals[TR]:
-        raw_parts.append(f"{totals[TR]} Triumph")
-    if totals[DE]:
-        raw_parts.append(f"{totals[DE]} Despair")
-    if totals[LS]:
-        raw_parts.append(f"{totals[LS]} Light Side")
-    if totals[DS]:
-        raw_parts.append(f"{totals[DS]} Dark Side")
-    lines.append(f"Raw totals: {', '.join(raw_parts) if raw_parts else 'nothing'}")
 
     # Net results
     net_label_map = {
@@ -344,7 +289,10 @@ def format_ffg_summary(results: List[FFGResult], net: Dict[str, int]) -> str:
         val = net.get(key)
         if val:
             net_parts.append(f"{val} {net_label_map[key]}")
-    lines.append(f"Net: {', '.join(net_parts) if net_parts else 'all cancelled out'}")
+
+    net_result = ", ".join(net_parts) if net_parts else "all cancelled out!"
+
+    verdict = "? Unknown"
 
     # Verdict
     is_force_only = all(r.die_name == "force" for r in results)
@@ -375,9 +323,9 @@ def format_ffg_summary(results: List[FFGResult], net: Dict[str, int]) -> str:
 
         modifiers = []
         if has_advantage:
-            modifiers.append("Advantage")
+            modifiers.append("Advantage.")
         if has_threat:
-            modifiers.append("Threat")
+            modifiers.append("Threat.")
         if has_triumph:
             modifiers.append("Triumph!")
         if has_despair:
@@ -392,8 +340,6 @@ def format_ffg_summary(results: List[FFGResult], net: Dict[str, int]) -> str:
         else:
             emoji = "➖"
 
-        verdict = f"{emoji} {' '.join(parts)}"
+        verdict = f"{emoji} {' '.join(parts)} {net_result}"
 
-    lines.append(f"Verdict: {verdict}")
-
-    return "\n".join(lines)
+    return verdict

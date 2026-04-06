@@ -66,14 +66,7 @@ FFG rolls produce a detailed summary showing:
 
 Example output for `!roll 2g 1p`:
 ```
-── FFG Summary ──
-Rolled: 2 Ability, 1 Difficulty
-  Ability: Su
-  Ability: Su Ad
-  Difficulty: Th
-Raw totals: 2 Success, 1 Advantage, 1 Threat
-Net: 2 Success
-Verdict: ✅ SUCCESS
+✅ SUCCESS with Advantage. 2 Success, 1 Advantage
 ```
 
 ### Text-Only Mode

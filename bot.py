@@ -451,22 +451,33 @@ async def handle_roll(client: AsyncClient, room_id: str, sender: str, expression
         )
         return
 
-    text_parts: list[str] = []
     image_mxcs: list[tuple[str, int, int]] = []
+
+    text_parts: list[str] = []
+
+    all_total = 0
 
     # ── Standard dice ────────────────────────────────────────────────────
     for count, sides in req.standard:
         results = roll_standard(count, sides)
         label = f"{count}d{sides}"
-        result_str = ", ".join(str(r) for r in results)
+        result_str = " + ".join(str(r) for r in results)
         total = sum(results)
-        text_parts.append(f"{label} → {result_str}  (total: {total})")
+        all_total += total
+        if len(results) > 1:
+            text_parts.append(f"{label}: {result_str} = {total}")
+        else:
+            text_parts.append(f"{label}: {total}")
 
         if not req.text_only:
             for value in results:
                 mxc = await get_std_die_mxc(client, sides, value)
                 if mxc:
                     image_mxcs.append((mxc, 64, 64))
+
+    # only show the numerical result when numerical dice are thrown
+    if len(req.standard) > 0:
+        text_parts.insert(0, f"Result: {all_total}")
 
     # ── FFG dice ─────────────────────────────────────────────────────────
     ffg_all_results: list[FFGResult] = []
@@ -482,9 +493,7 @@ async def handle_roll(client: AsyncClient, room_id: str, sender: str, expression
 
     if ffg_all_results:
         net = net_ffg_results(ffg_all_results)
-        # One-line per-die results
-        text_parts.append(f"FFG → {format_ffg_results(ffg_all_results, net)}")
-        # Detailed summary block
+        # summary block
         text_parts.append(format_ffg_summary(ffg_all_results, net))
 
     # ── Build message ────────────────────────────────────────────────────
