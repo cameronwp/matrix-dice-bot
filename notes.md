@@ -1,2 +1,4 @@
 Manual checks
-- [ ] FFG dice are correct
+- [x] FFG dice are correct
+- [ ] FFG dice math is correct
+- [ ] uniform distributions are generated with correct bounds

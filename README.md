@@ -2,6 +2,8 @@
 
 A Matrix/Synapse bot that rolls dice and sends back images of each die face.
 
+The initial version was vibe coded with Claude 4.6 Opus.
+
 ## Commands
 
 | Command | Description |
