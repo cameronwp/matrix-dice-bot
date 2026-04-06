@@ -169,7 +169,7 @@ FFG_SYMBOL_GLYPHS = {
     FA: ("✖", "#FF4444"),  # red X
     TH: ("◆", "#333333"),  # dark diamond
     DE: ("☠", "#FF0000"),  # red skull
-    LS: ("○", "#FFFFFF"),  # white circle
+    LS: ("○", "#929292"),  # grey circle
     DS: ("●", "#000000"),  # black circle
 }
 
